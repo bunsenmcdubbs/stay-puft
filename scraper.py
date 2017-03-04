@@ -7,7 +7,6 @@ soup = BeautifulSoup(r)
 
 letters = soup.find_all("h2", class_="title")
 
-
-print type(soup)
-# print soup.prettify()
-print letters
+for letter in letters:
+    each = ((str(letter)).split("\n")[1]).strip()
+    print each
