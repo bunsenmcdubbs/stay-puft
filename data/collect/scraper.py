@@ -1,12 +1,23 @@
 from bs4 import BeautifulSoup
-import urllib
+import requests
 
-r = urllib.urlopen('https://devpost.com/hackathons?utf8=%E2%9C%93&search=&challenge_type=all&sort_by=Submission+Deadline').read()
 
-soup = BeautifulSoup(r)
+def get_num_contributors(url):
+    result = requests.get(url)
+    c = result.content
+    soup = BeautifulSoup(c)
 
-letters = soup.find_all("h2", class_="title")
+    contributors = 0
+    letters = soup.find_all("a", class_="user-profile-link")
+    for letter in letters:
+        each = (str(letter)).split("\n")
+        for word in each:
+            word_split = word.split()
+            if len(word_split) == 4:
+                contributors = contributors + 1
 
-for letter in letters:
-    each = ((str(letter)).split("\n")[1]).strip()
-    print each
+    return contributors
+
+
+# main
+print get_num_contributors("https://devpost.com/software/persist")
