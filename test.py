@@ -5,6 +5,9 @@ r = urllib.urlopen('https://devpost.com/hackathons?utf8=%E2%9C%93&search=&challe
 
 soup = BeautifulSoup(r)
 
+letters = soup.find_all("h2", class_="title")
+
 
 print type(soup)
-print soup.prettify()
+# print soup.prettify()
+print letters
