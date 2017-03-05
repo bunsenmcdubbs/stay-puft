@@ -1,3 +1,6 @@
+# Config (with database stuff)
+config.json
+
 # Virtual environment, for sanity
 venv
 

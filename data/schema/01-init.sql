@@ -7,11 +7,13 @@ create table hackathon (
     city varchar(512),
     host varchar(512),
     length int,
-    num_participants int,
+    num_participants varchar(32),
     allows_hs bool,
-    cost int,
+    cost varchar(100),
 
     primary key (id),
+    unique index (title, start_date, end_date),
+
     index (start_date),
     index (end_date)
 );
