@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 
+# return soup from url
 def soup_from_url(url):
     result = requests.get(url)
     c = result.content
@@ -45,5 +46,5 @@ def get_project_links(submission_url):
     return [item for sublist in project_links for item in sublist]
 
 # main
-
 get_project_links("https://hackgt2016.devpost.com/submissions")
+
