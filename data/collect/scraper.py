@@ -20,12 +20,30 @@ def get_contributors(project_url):
 
 # returns list of devpost project links given the submission page
 def get_project_links(submission_url):
+    project_links = []
+    num = 1
     soup = soup_from_url(submission_url)
-    
-    return [elem['href'] for elem in soup.find_all("a", class_="block-wrapper-link fade link-to-software", href=True)]
+    letters = soup.find("span", class_="items_info").find_all('b')
 
+    for letter in letters:
+        # (yamini) lol sorry this is gross
+        total = (((str(letters)).split("b")[3]).split(">"))[1].split("<")[0]
+
+    # divide by number of submissions per page
+    num_pages = int(total)/24
+
+    # urls hold al the submissions pages
+    urls = [submission_url]
+    for i in range(num_pages + 1):
+        urls.append(submission_url+ "?page=" + str(i))
+
+    # scrape each submission page
+    for each_url in urls:
+        soup = soup_from_url(each_url)
+        project_links.append([elem['href'] for elem in soup.find_all("a", class_="block-wrapper-link fade link-to-software", href=True)])
+
+    return [item for sublist in project_links for item in sublist]
 
 # main
 
-print get_contributors("https://devpost.com/software/persist")
-print get_project_links("https://hackillinois-2017.devpost.com/submissions")
+get_project_links("https://hackgt2016.devpost.com/submissions")
