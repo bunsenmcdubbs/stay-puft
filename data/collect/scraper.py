@@ -1,11 +1,16 @@
 from bs4 import BeautifulSoup
 import requests
 
-# returns devpost profiles of contributors for a single project
-def get_contributors(project_url):
-    result = requests.get(project_url)
+def soup_from_url(url):
+    result = requests.get(url)
     c = result.content
     soup = BeautifulSoup(c)
+    return soup
+
+
+# returns devpost profiles of contributors for a single project
+def get_contributors(project_url):
+    soup = soup_from_url(project_url)
 
     letters = soup.find_all("a", class_="user-profile-link")
     for letter in letters:
@@ -15,10 +20,8 @@ def get_contributors(project_url):
 
 # returns list of devpost project links given the submission page
 def get_project_links(submission_url):
-    result = requests.get(submission_url)
-    c = result.content
-    soup = BeautifulSoup(c)
-
+    soup = soup_from_url(submission_url)
+    
     return [elem['href'] for elem in soup.find_all("a", class_="block-wrapper-link fade link-to-software", href=True)]
 
 
