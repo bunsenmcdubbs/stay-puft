@@ -1,23 +1,28 @@
 from bs4 import BeautifulSoup
 import requests
 
-
-def get_num_contributors(url):
-    result = requests.get(url)
+# returns devpost profiles of contributors for a single project
+def get_contributors(project_url):
+    result = requests.get(project_url)
     c = result.content
     soup = BeautifulSoup(c)
 
-    contributors = 0
     letters = soup.find_all("a", class_="user-profile-link")
     for letter in letters:
         each = (str(letter)).split("\n")
-        for word in each:
-            word_split = word.split()
-            if len(word_split) == 4:
-                contributors = contributors + 1
-
+        contributors = set([elem['href'] for elem in soup.find_all("a", class_="user-profile-link", href=True)])
     return contributors
+
+# returns list of devpost project links given the submission page
+def get_project_links(submission_url):
+    result = requests.get(submission_url)
+    c = result.content
+    soup = BeautifulSoup(c)
+
+    return [elem['href'] for elem in soup.find_all("a", class_="block-wrapper-link fade link-to-software", href=True)]
 
 
 # main
-print get_num_contributors("https://devpost.com/software/persist")
+
+print get_contributors("https://devpost.com/software/persist")
+print get_project_links("https://hackillinois-2017.devpost.com/submissions")
