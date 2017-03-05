@@ -32,7 +32,7 @@ def get_project_links(submission_url):
     # divide by number of submissions per page
     num_pages = int(total)/24
 
-    # urls hold al the submissions pages
+    # urls hold all the submissions pages
     urls = [submission_url]
     for i in range(num_pages + 1):
         urls.append(submission_url+ "?page=" + str(i))
