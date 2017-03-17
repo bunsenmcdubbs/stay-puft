@@ -15,6 +15,7 @@ CONTRIBUTORS_FAILED = -3
 
 # grab all the info from devpost! NOT DONE
 # select rows from the database and page scrape
+# TODO implement retry
 def scrape_devpost(conn, verbose=False, silent=True):
     query = "SELECT h.id AS id, h.title AS title, h.start_date AS start_date, h.end_date AS end_date, s.status_id AS status_id FROM hackathon AS h JOIN hackathon_scrape_status AS s ON h.id = s.hackathon_id"
     with conn.cursor() as cursor:
@@ -53,6 +54,8 @@ def save_hackathon_projects(conn, h_id, h_title, h_start, h_end, verbose=False, 
             conn.commit()
             try:
                 with conn.cursor() as ap_cursor:
+                    # TODO BUG: (in PennApps Fall 2014
+                    # UnicodeEncodeError: 'latin-1' codec can't encode character '\u25bc' inposition 67: ordinal not in range(256)
                     add_project_query = "INSERT INTO project (hackathon_id, title, devpost_url) VALUES (%s, %s, %s)"
                     add_project = lambda h_id, title, url: ap_cursor.execute(add_project_query, (h_id, title, url))
                     for title, devpost_url in project_info:

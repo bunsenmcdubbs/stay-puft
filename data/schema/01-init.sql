@@ -26,10 +26,11 @@ create table project (
     github_url varchar(256),
     devpost_url varchar(256),
 
-    primary key (id)
+    primary key (id),
+    unique index (hackathon_id, devpost_url)
 );
 
-drop table if exists user;
+drop table if exists person;
 create table person (
     id int auto_increment not null,
 

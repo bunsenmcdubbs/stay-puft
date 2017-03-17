@@ -28,26 +28,27 @@ def get_projects_info(submission_url):
     project_infos = []
     num = 1
     soup = soup_from_url(submission_url)
-    total_elem = soup.find("span", class_="items_info")
-    if total_elem is not None:
-        total_proj = int(total_elem.text.split()[-1])
+    proj_idx_elem = soup.find("span", class_="items_info")
+    if proj_idx_elem is not None:
+        _, proj_per_page, total_proj = list(map(lambda x: int(x), filter(lambda x: x.isdigit(), proj_idx_elem.text.split())))
     else:
         total_proj = 0
 
     # divide by number of submissions per page
-    num_pages = int(total_proj/24) + 1
+    num_pages = int(total_proj/proj_per_page) + 1 if total_proj > 0 else 0
 
     # urls hold all the submissions pages
-    urls = [submission_url]
+    urls = []
     for i in range(1, num_pages):
         urls.append(submission_url+ "?page=" + str(i))
 
     # scrape each submission page
     for url in urls:
         soup = soup_from_url(url)
-        project_infos.append([(elem.find('h5').text.strip(), elem['href']) for elem in soup.find_all("a", class_="block-wrapper-link", href=True)])
+        for project in [(elem.find('h5').text.strip(), elem['href']) for elem in soup.find_all("a", class_="block-wrapper-link", href=True)]:
+            project_infos.append(project)
     
-    return [item for sublist in project_infos for item in sublist]
+    return project_infos
 
 def search_results(base_url, query, page_key="page"):
     page_num = 1
