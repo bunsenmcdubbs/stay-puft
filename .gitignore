@@ -1,3 +1,6 @@
+# Vim swp files
+*.swp
+
 # Config (with database stuff)
 config.json
 
