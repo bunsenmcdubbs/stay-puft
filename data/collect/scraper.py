@@ -10,6 +10,10 @@ def soup_from_url(url):
     soup = BeautifulSoup(c, "html.parser")
     return soup
 
+# returns a tuple of (user name, user_url) from user_url
+def get_user_info(user_url):
+    raise NotImplementedError
+
 # returns devpost profiles of contributors for a single project
 def get_contributors(project_url):
     soup = soup_from_url(project_url)
@@ -20,8 +24,8 @@ def get_contributors(project_url):
 
 
 # returns list of devpost project links given the submission page
-def get_project_links(submission_url):
-    project_links = []
+def get_projects_info(submission_url):
+    project_infos = []
     num = 1
     soup = soup_from_url(submission_url)
     total_elem = soup.find("span", class_="items_info")
@@ -31,19 +35,19 @@ def get_project_links(submission_url):
         total_proj = 0
 
     # divide by number of submissions per page
-    num_pages = int(total_proj/24)
+    num_pages = int(total_proj/24) + 1
 
     # urls hold all the submissions pages
     urls = [submission_url]
-    for i in range(num_pages + 1):
+    for i in range(1, num_pages):
         urls.append(submission_url+ "?page=" + str(i))
 
     # scrape each submission page
-    for each_url in urls:
-        soup = soup_from_url(each_url)
-        project_links.append([elem['href'] for elem in soup.find_all("a", class_="block-wrapper-link fade link-to-software", href=True)])
-
-    return [item for sublist in project_links for item in sublist]
+    for url in urls:
+        soup = soup_from_url(url)
+        project_infos.append([(elem.find('h5').text.strip(), elem['href']) for elem in soup.find_all("a", class_="block-wrapper-link", href=True)])
+    
+    return [item for sublist in project_infos for item in sublist]
 
 def search_results(base_url, query, page_key="page"):
     page_num = 1
@@ -85,5 +89,5 @@ def get_submission_url(name, start, end):
 
 if __name__=='__main__':
     #print(get_contributors("https://devpost.com/software/persist"))
-    print(get_project_links("https://hackillinois-2017.devpost.com/submissions"))
+    print(get_projects_info("https://geauxhack2014.devpost.com/submissions"))
     #print(get_submission_url('hack the north', datetime(2016,9,16), datetime(2016,9,18)))

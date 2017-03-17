@@ -34,6 +34,7 @@ create table devpost_user (
     id int auto_increment not null,
     name varchar(128) not null,
     profile_url varchar(256) not null,
+    github_url varchar(256),
 
     primary key (id)
 );
