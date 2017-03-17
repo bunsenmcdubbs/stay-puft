@@ -9,10 +9,13 @@ create table scrape_status (
 insert into scrape_status (id, description)
 values
     (0, 'not started'),
-    (1, 'started'),
-    (2, 'finished'),
+    (1, 'projects started'),
+    (2, 'projects completed'),
+    (3, 'contributors started'),
+    (4, 'contributors completed'),
     (-1, 'nothing found'),
-    (-2, 'failed');
+    (-2, 'projects interrupted/failed'),
+    (-3, 'contributors interrupted/failed');
 
 drop table if exists hackathon_scrape_status;
 create table hackathon_scrape_status (

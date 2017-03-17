@@ -10,7 +10,7 @@ def soup_from_url(url):
     soup = BeautifulSoup(c, "html.parser")
     return soup
 
-# returns a tuple of (user name, user_url) from user_url
+# returns a tuple of (<user data>) from user_url
 def get_user_info(user_url):
     raise NotImplementedError
 

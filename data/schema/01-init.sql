@@ -29,33 +29,39 @@ create table project (
     primary key (id)
 );
 
-drop table if exists devpost_user;
-create table devpost_user (
+drop table if exists user;
+create table person (
     id int auto_increment not null,
-    name varchar(128) not null,
-    profile_url varchar(256) not null,
-    github_url varchar(256),
 
     primary key (id)
 );
 
+drop table if exists devpost_user;
+create table devpost_user (
+    id int not null references person (id),
+    username varchar(128) not null,
+
+    primary key (id),
+    unique index (username)
+);
+
 drop table if exists github_user;
 create table github_user (
-    id int auto_increment not null,
-    name varchar(128) not null,
-    profile_url varchar(256) not null,
+    id int not null references person (id),
+    username varchar(128) not null,
 
-    primary key (id)
+    primary key (id),
+    unique index (username)
 );
 
 drop table if exists project_devpost_submitter;
 create table project_devpost_submitter (
     project_id int not null references project (id),
-    user_id int not null references devpost_user (id)
+    person_id int not null references devpost_user (id)
 );
 
 drop table if exists project_github_contributor;
 create table project_github_contributor (
     project_id int not null references project (id),
-    user_id int not null references github_user (id)
+    person_id int not null references github_user (id)
 );
