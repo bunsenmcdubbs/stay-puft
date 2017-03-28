@@ -4,6 +4,7 @@ create table hackathon (
     title varchar(256) not null,
     start_date date not null,
     end_date date not null,
+    devpost_url varchar(512),
     city varchar(512),
     host varchar(512),
     length int,

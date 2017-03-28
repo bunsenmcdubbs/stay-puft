@@ -51,12 +51,12 @@ def save_hackathon_projects(conn, h_id, h_title, h_start, h_end, verbose=False, 
             conn.commit()
         else:
             project_info = get_projects_info(submission_url)
+            add_devpost_url_query = "UPDATE hackathon SET devpost_url = %s WHERE id = %s"
+            cursor.execute(add_devpost_url_query, (submission_url, h_id))
             cursor.execute(STATUS_UPDATE(PROJECTS_STARTED)(h_id))
             conn.commit()
             try:
                 with conn.cursor() as ap_cursor:
-                    # TODO BUG: (in PennApps Fall 2014
-                    # UnicodeEncodeError: 'latin-1' codec can't encode character '\u25bc' inposition 67: ordinal not in range(256)
                     add_project_query = "INSERT INTO project (hackathon_id, title, devpost_url) VALUES (%s, %s, %s)"
                     add_project = lambda h_id, title, url: ap_cursor.execute(add_project_query, (h_id, title.encode('unicode_escape'), url))
                     for title, devpost_url in project_info:
