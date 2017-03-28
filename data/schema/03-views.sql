@@ -1,5 +1,5 @@
-drop view if exists hackathon_scrape_status_view;
-create view hackathon_scrape_status_view
+drop view if exists hackathon_scrape_status_info;
+create view hackathon_scrape_status_info
 as 
     select h.id, h.title, hss.status_id, ss.description
     from hackathon h
