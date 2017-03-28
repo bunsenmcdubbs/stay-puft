@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
+from fuzzywuzzy import fuzz, process
 import requests
-from datetime import datetime
+from datetime import date, datetime
 from urllib.parse import quote
 
 # return soup from url
@@ -85,10 +86,11 @@ def get_submission_url(name, start, end):
             })
         except Exception as err:
             pass
-    matches = list(filter(lambda l: abs((start-l['date']).days) < 2, listings))
+    matches = sorted(list(filter(lambda l: abs((start-l['date']).days) < 2, listings)), key=lambda l: fuzz.ratio(name, l['name']), reverse=True)
+    
     return matches[0]['url'] if len(matches) > 0 else None
 
 if __name__=='__main__':
     #print(get_contributors("https://devpost.com/software/persist"))
-    print(get_projects_info("https://geauxhack2014.devpost.com/submissions"))
-    #print(get_submission_url('hack the north', datetime(2016,9,16), datetime(2016,9,18)))
+    #print(get_projects_info("https://geauxhack2014.devpost.com/submissions"))
+    print(get_submission_url('HackPrinceton', date(2014,11,14), date(2014,11,16)))
