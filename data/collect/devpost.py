@@ -17,18 +17,19 @@ CONTRIBUTORS_FAILED = -3
 # select rows from the database and page scrape
 # TODO implement retry
 def scrape_devpost(conn, verbose=False, silent=True):
-    query = "SELECT h.id AS id, h.title AS title, h.start_date AS start_date, h.end_date AS end_date, s.status_id AS status_id FROM hackathon AS h JOIN hackathon_scrape_status AS s ON h.id = s.hackathon_id"
+    query = "SELECT h.id AS id, h.title AS title, h.start_date AS start_date, h.end_date AS end_date, h.devpost_url as devpost_url, s.status_id AS status_id FROM hackathon AS h JOIN hackathon_scrape_status AS s ON h.id = s.hackathon_id"
     with conn.cursor() as cursor:
         cursor.execute(query)
         for x in range(0, cursor.rowcount):
             # TODO make this printing better/more consistent (esp. status)
+            # use `logging`
             row = cursor.fetchone()
             if verbose and not silent:
                 print(row['title'], end=' ', flush=True)
-            elif not silent:
-                print('.', end=' ', flush=True)
             if row['status_id'] is NOT_STARTED:
-                save_hackathon_projects(conn, row['id'], row['title'], row['start_date'], row['end_date'], verbose=verbose, silent=silent)
+                if not silent and not verbose:
+                    print('.', end=' ', flush=True)
+                save_hackathon_projects(conn, row['id'], row['title'], row['start_date'], row['end_date'], row['devpost_url'], verbose=verbose, silent=silent)
             elif not silent and verbose:
                 print('status_id: {}'.format(row['status_id']))
             elif not silent and not verbose:
@@ -39,8 +40,8 @@ def scrape_devpost(conn, verbose=False, silent=True):
     #raise NotImplementedError
 
 # save a hackathon's projects into the database
-def save_hackathon_projects(conn, h_id, h_title, h_start, h_end, verbose=False, silent=True):
-    submission_url = get_submission_url(h_title, h_start, h_end)
+def save_hackathon_projects(conn, h_id, h_title, h_start, h_end, h_devpost_url, verbose=False, silent=True):
+    submission_url = get_submission_url(h_title, h_start, h_end) if h_devpost_url is None else h_devpost_url
     if verbose and not silent:
         print(submission_url)
     elif not silent:
@@ -57,7 +58,7 @@ def save_hackathon_projects(conn, h_id, h_title, h_start, h_end, verbose=False, 
             conn.commit()
             try:
                 with conn.cursor() as ap_cursor:
-                    add_project_query = "INSERT INTO project (hackathon_id, title, devpost_url) VALUES (%s, %s, %s)"
+                    add_project_query = "INSERT IGNORE INTO project (hackathon_id, title, devpost_url) VALUES (%s, %s, %s)"
                     add_project = lambda h_id, title, url: ap_cursor.execute(add_project_query, (h_id, title.encode('unicode_escape'), url))
                     for title, devpost_url in project_info:
                         add_project(h_id, title, devpost_url)

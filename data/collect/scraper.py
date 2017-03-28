@@ -40,7 +40,7 @@ def get_projects_info(submission_url):
 
     # urls hold all the submissions pages
     urls = []
-    for i in range(1, num_pages):
+    for i in range(1, num_pages + 1): # 1-indexed
         urls.append(submission_url+ "?page=" + str(i))
 
     # scrape each submission page
