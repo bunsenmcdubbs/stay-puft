@@ -21,6 +21,7 @@ def scrape_devpost(conn, verbose=False, silent=True):
     with conn.cursor() as cursor:
         cursor.execute(query)
         for x in range(0, cursor.rowcount):
+            # TODO make this printing better/more consistent (esp. status)
             row = cursor.fetchone()
             if verbose and not silent:
                 print(row['title'], end=' ', flush=True)
@@ -57,13 +58,14 @@ def save_hackathon_projects(conn, h_id, h_title, h_start, h_end, verbose=False, 
                     # TODO BUG: (in PennApps Fall 2014
                     # UnicodeEncodeError: 'latin-1' codec can't encode character '\u25bc' inposition 67: ordinal not in range(256)
                     add_project_query = "INSERT INTO project (hackathon_id, title, devpost_url) VALUES (%s, %s, %s)"
-                    add_project = lambda h_id, title, url: ap_cursor.execute(add_project_query, (h_id, title, url))
+                    add_project = lambda h_id, title, url: ap_cursor.execute(add_project_query, (h_id, title.encode('unicode_escape'), url))
                     for title, devpost_url in project_info:
                         add_project(h_id, title, devpost_url)
                     conn.commit()
             except Exception as err:
                 if not silent:
                     print("Failed on hackathon #{} ({})".format(h_id, h_title))
+                    print("Project {} {}".format(title, devpost_url))
                 cursor.execute(STATUS_UPDATE(PROJECTS_FAILED)(h_id))
                 # TODO rollback ap_cursor's inserts?
                 conn.commit()
