@@ -23,3 +23,14 @@ as
         group by h.id
     ) c
         on c.id = h.id
+;
+
+drop view if exists college_hackathon_id;
+create view college_hackathon_id
+as
+    select id
+    from hackathon
+    where
+        host like '%university%' or
+        host like '%college%'
+;
